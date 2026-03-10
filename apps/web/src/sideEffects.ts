@@ -23,3 +23,9 @@ setupi18n()
 setupWagmiAutoConnect()
 setupVitePreloadErrorHandler()
 setupTurnstileCSPErrorFilter()
+
+// AsterSwap: inject client-side V2 routing for BSC (avoids Uniswap API dependency)
+import { setClientSideV2TradeHook } from 'uniswap/src/features/transactions/swap/hooks/useTrade'
+import { useClientSideV2Trade } from '~/hooks/useClientSideV2Trade'
+
+setClientSideV2TradeHook(useClientSideV2Trade)

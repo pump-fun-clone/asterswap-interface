@@ -31,11 +31,7 @@ function useV2Pairs(currencies: [Maybe<Currency>, Maybe<Currency>][]): [PairStat
     () =>
       tokens.map(([tokenA, tokenB]) => {
         const factoryAddress = getV2FactoryAddress(tokenA?.chainId ?? 0)
-        return tokenA &&
-          tokenB &&
-          tokenA.chainId === tokenB.chainId &&
-          !tokenA.equals(tokenB) &&
-          factoryAddress
+        return tokenA && tokenB && tokenA.chainId === tokenB.chainId && !tokenA.equals(tokenB) && factoryAddress
           ? computePairAddress({ factoryAddress, tokenA, tokenB })
           : undefined
       }),

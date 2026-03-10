@@ -249,9 +249,12 @@ export function useInitialCurrencyState(): {
         initialChainId: parsedCurrencyState.chainId ? supportedChainId : undefined,
       }
     }
-    // return ETH or parsedCurrencyState
+    // AsterSwap: default to native token of the current/default chain (BNB on BSC)
+    const fallbackChainId = parsedCurrencyState.chainId ? supportedChainId : defaultChainId
     return {
-      initialInputCurrencyAddress: parsedCurrencyState.outputCurrencyAddress ? undefined : 'ETH',
+      initialInputCurrencyAddress: parsedCurrencyState.outputCurrencyAddress
+        ? undefined
+        : getNativeAddress(fallbackChainId ?? UniverseChainId.Bnb),
       initialChainId: parsedCurrencyState.chainId ? supportedChainId : undefined,
     }
   }, [
@@ -265,14 +268,27 @@ export function useInitialCurrencyState(): {
 
   const supportedOutputChainId = useSupportedChainId(parsedCurrencyState.outputChainId)
 
-  const initialOutputCurrencyAddress = useMemo(
-    () =>
-      // clear output if identical unless there's a supported outputChainId which means we're bridging
-      initialInputCurrencyAddress === parsedCurrencyState.outputCurrencyAddress && !supportedOutputChainId
+  // AsterSwap: default output token is USDT on BSC when no URL params
+  const ASTERSWAP_DEFAULT_OUTPUT: Partial<Record<number, string>> = {
+    56: '0x55d398326f99059fF775485246999027B3197955', // USDT on BSC
+  }
+  const initialOutputCurrencyAddress = useMemo(() => {
+    if (parsedCurrencyState.outputCurrencyAddress) {
+      // clear output if identical unless bridging
+      return initialInputCurrencyAddress === parsedCurrencyState.outputCurrencyAddress && !supportedOutputChainId
         ? undefined
-        : parsedCurrencyState.outputCurrencyAddress,
-    [initialInputCurrencyAddress, parsedCurrencyState.outputCurrencyAddress, supportedOutputChainId],
-  )
+        : parsedCurrencyState.outputCurrencyAddress
+    }
+    // No URL param — use AsterSwap default output token for the current chain
+    const activeChain = initialChainId ?? defaultChainId
+    return activeChain ? ASTERSWAP_DEFAULT_OUTPUT[activeChain] : undefined
+  }, [
+    initialInputCurrencyAddress,
+    initialChainId,
+    defaultChainId,
+    parsedCurrencyState.outputCurrencyAddress,
+    supportedOutputChainId,
+  ])
 
   const initialInputCurrency = useCurrency({ address: initialInputCurrencyAddress, chainId: initialChainId })
   const initialOutputCurrency = useCurrency({
