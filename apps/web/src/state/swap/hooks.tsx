@@ -137,7 +137,7 @@ export function serializeSwapAddressesToURLParameters({
   exactCurrencyField?: CurrencyField
   exactAmountToken?: string
 }): string {
-  const chainIdOrDefault = chainId ?? UniverseChainId.Mainnet
+  const chainIdOrDefault = chainId ?? UniverseChainId.Bnb
 
   return (
     '?' +
@@ -166,7 +166,7 @@ export function queryParametersToCurrencyState(parsedQs: ParsedQs): SerializedCu
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const parsedInputCurrencyAddress = parseCurrencyFromURLParameter(
     parsedQs.inputCurrency || parsedQs.inputcurrency,
-    chainIdToPlatform(chainId ?? UniverseChainId.Mainnet),
+    chainIdToPlatform(chainId ?? UniverseChainId.Bnb),
   )
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const parsedOutputCurrencyAddress = parseCurrencyFromURLParameter(
@@ -216,7 +216,7 @@ export function useInitialCurrencyState(): {
     return queryParametersToCurrencyState(parsedQs)
   }, [parsedQs])
 
-  const supportedChainId = useSupportedChainId(parsedCurrencyState.chainId ?? defaultChainId) ?? UniverseChainId.Mainnet
+  const supportedChainId = useSupportedChainId(parsedCurrencyState.chainId ?? defaultChainId) ?? UniverseChainId.Bnb
   const supportedChainInfo = getChainInfo(supportedChainId)
   const isSupportedChainCompatible = isTestnetModeEnabled === !!supportedChainInfo.testnet
 

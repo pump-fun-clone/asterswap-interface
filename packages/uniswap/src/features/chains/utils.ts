@@ -287,7 +287,8 @@ function getDefaultChainId({
     return UniverseChainId.Solana
   }
 
-  return isTestnetModeEnabled ? UniverseChainId.Sepolia : UniverseChainId.Mainnet
+  // AsterSwap: default to BSC mainnet instead of Ethereum mainnet
+  return isTestnetModeEnabled ? UniverseChainId.Sepolia : UniverseChainId.Bnb
 }
 
 /** Returns all stablecoins for a given chainId. */
