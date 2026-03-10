@@ -2,7 +2,16 @@ import { Currency, CurrencyAmount, V2_FACTORY_ADDRESSES } from '@uniswap/sdk-cor
 import { computePairAddress, Pair } from '@uniswap/v2-sdk'
 import { useMemo } from 'react'
 import { useReadContracts } from 'wagmi'
+import { ASTERSWAP_V2_FACTORY_ADDRESSES } from '~/constants/asterswap'
 import { assume0xAddress } from '~/utils/wagmi'
+
+/**
+ * Returns the V2 factory address for a given chainId.
+ * AsterSwap overrides the default Uniswap V2 factory on BSC (chainId 56).
+ */
+function getV2FactoryAddress(chainId: number): string | undefined {
+  return ASTERSWAP_V2_FACTORY_ADDRESSES[chainId] ?? V2_FACTORY_ADDRESSES[chainId]
+}
 
 enum PairState {
   LOADING = 0,
@@ -21,12 +30,13 @@ function useV2Pairs(currencies: [Maybe<Currency>, Maybe<Currency>][]): [PairStat
   const pairAddresses = useMemo(
     () =>
       tokens.map(([tokenA, tokenB]) => {
+        const factoryAddress = getV2FactoryAddress(tokenA?.chainId ?? 0)
         return tokenA &&
           tokenB &&
           tokenA.chainId === tokenB.chainId &&
           !tokenA.equals(tokenB) &&
-          V2_FACTORY_ADDRESSES[tokenA.chainId]
-          ? computePairAddress({ factoryAddress: V2_FACTORY_ADDRESSES[tokenA.chainId], tokenA, tokenB })
+          factoryAddress
+          ? computePairAddress({ factoryAddress, tokenA, tokenB })
           : undefined
       }),
     [tokens],
