@@ -186,6 +186,16 @@ export default defineConfig(({ mode }) => {
       find: /^uniswap\/src\/i18n$/,
       replacement: path.resolve(__dirname, '../../packages/uniswap/src/i18n/index.web-app.ts'),
     },
+    // Stub out private Uniswap embedded wallet packages — AsterSwap doesn't use passkey wallets.
+    // Without these stubs, Vite's import-analysis fails in dev mode even for type-only imports.
+    {
+      find: /^@uniswap\/client-privy-embedded-wallet\/.*\/service_pb$/,
+      replacement: path.resolve(__dirname, 'src/stubs/privy-embedded-wallet-pb.ts'),
+    },
+    {
+      find: /^@uniswap\/client-privy-embedded-wallet\/.*\/service_connect$/,
+      replacement: path.resolve(__dirname, 'src/stubs/privy-embedded-wallet-connect.ts'),
+    },
   ]
 
   // Create process.env definitions for ALL environment variables
